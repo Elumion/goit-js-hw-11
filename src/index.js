@@ -1,6 +1,7 @@
 import './sass/main.scss';
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
+import { fetchImages } from './fetch';
 
 const inputSearch = document.querySelector("#image__input-id");
 const searchImgBtn = document.querySelector("#search__image-btn");
@@ -58,21 +59,9 @@ const fetchImg = async (isLoadMore, currentPage, e) => {
         refreshElem(container);
     }
 
-    const axios = require('axios');
-
-    let response = await axios.get(`https://pixabay.com/api/`, {
-        params: {
-            key: `24969283-4f94e97e03339c4eb5ce6e732`,
-            q: `${inputSearch.value.replace(" ", "+")}`,
-            image_type: "photo",
-            orientation: "horizontal",
-            safesearch: true,
-            page: currentPage,
-            per_page: 40,
-        }
-    })
+    let response = await fetchImages(inputSearch.value, currentPage)
         .then(res => {
-            if ((inputSearch.value === "" && !isLoadMore) || res.data.totalHits === 0) {
+            if ((inputSearch.value.trim() === "" && !isLoadMore) || res.data.totalHits === 0) {
                 throw new Error(res.statusText);
             }
             if (res.data.totalHits - currentPage * 40 <= 0) {
